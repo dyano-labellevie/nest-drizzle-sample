@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
 import { DrizzleMySqlModule } from '@knaadh/nestjs-drizzle-mysql2';
 import * as schema from './db/schema';
 
@@ -19,6 +20,7 @@ import * as schema from './db/schema';
       },
       config: { schema: { ...schema }, mode: 'default' },
     }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

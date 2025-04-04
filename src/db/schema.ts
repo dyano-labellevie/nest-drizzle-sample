@@ -1,8 +1,3 @@
-import { mysqlTable, serial, varchar } from 'drizzle-orm/mysql-core';
+import { User } from '../user/entities/user.entity';
 
-export const user = mysqlTable('User', {
-  id: serial('id').primaryKey(),
-  name: varchar('name', { length: 256 }),
-  email: varchar('email', { length: 256 }),
-  password: varchar('password', { length: 256 }),
-});
+export const user = User;

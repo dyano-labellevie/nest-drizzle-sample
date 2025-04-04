@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { eq } from 'drizzle-orm';
+import { MySql2Database } from 'drizzle-orm/mysql2';
+import * as schema from '../db/schema';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @Inject('DB_DEV') private drizzle: MySql2Database<typeof schema>,
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    return await this.drizzle.insert(schema.user).values(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    return await this.drizzle.query.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.drizzle.query.user.findFirst({
+      with: {
+        id,
+      },
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const { name, email, password } = updateUserDto;
+    return await this.drizzle
+      .update(schema.user)
+      .set({ name, email, password })
+      .where(eq(schema.user.id, id));
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return await this.drizzle
+      .delete(schema.user)
+      .where(eq(schema.user.id, id))
+      .limit(1);
   }
 }
