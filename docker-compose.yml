@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: app
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - try-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: npm run start:dev
+
+  mysql:
+    platform: linux/x86_64
+    image: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - /var/lib/mysql
+    networks:
+      - try-network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nest_app
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+
+networks:
+  try-network:
+    driver: bridge
+    name: try-network
