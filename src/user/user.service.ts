@@ -28,10 +28,9 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { name, email, password } = updateUserDto;
     return await this.drizzle
       .update(schema.user)
-      .set({ name, email, password })
+      .set(updateUserDto)
       .where(eq(schema.user.id, id));
   }
 

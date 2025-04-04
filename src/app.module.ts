@@ -7,18 +7,22 @@ import * as schema from './db/schema';
 
 @Module({
   imports: [
-    DrizzleMySqlModule.register({
+    DrizzleMySqlModule.registerAsync({
       tag: 'DB_DEV',
-      mysql: {
-        connection: 'client',
-        config: {
-          host: 'mysql',
-          user: 'admin',
-          password: 'admin',
-          database: 'nest_app',
-        },
+      useFactory() {
+        return {
+          mysql: {
+            connection: 'client',
+            config: {
+              host: 'mysql',
+              user: 'admin',
+              password: 'admin',
+              database: 'nest_app',
+            },
+          },
+          config: { schema: { ...schema }, mode: 'default' },
+        };
       },
-      config: { schema: { ...schema }, mode: 'default' },
     }),
     UserModule,
   ],
