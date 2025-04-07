@@ -16,6 +16,20 @@ services:
         condition: service_healthy
     command: npm run start:dev
 
+  consumer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: consumer
+    ports:
+      - 3010:3000
+    volumes:
+      - ./consumer:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - try-network
+    command: npm run start:dev
+
   kafka-ui:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
