@@ -5,7 +5,7 @@ export default defineConfig({
   schema: './src/db/schema.ts',
   out: './drizzle',
   dbCredentials: {
-    host: 'mysql',
+    host: 'localhost',
     user: 'admin',
     password: 'admin',
     port: 3306,

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEventProducer } from './producer/user-event.producer';
 import { eq } from 'drizzle-orm';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import * as schema from '../db/schema';
@@ -8,11 +9,20 @@ import * as schema from '../db/schema';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('DB_DEV') private drizzle: MySql2Database<typeof schema>,
+    @Inject('DB_DEV') private readonly drizzle: MySql2Database<typeof schema>,
+    @Inject('UserEventProducer') private readonly userEventProducer: UserEventProducer,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    return await this.drizzle.insert(schema.user).values(createUserDto);
+    const response = await this.drizzle.insert(schema.user).values(createUserDto);
+    await this.userEventProducer.publish({
+      type: 'ADDED_TO_USER',
+      user: {
+        name: createUserDto.name,
+        email: createUserDto.email,
+      },
+    });
+    return response;
   }
 
   async findAll() {
