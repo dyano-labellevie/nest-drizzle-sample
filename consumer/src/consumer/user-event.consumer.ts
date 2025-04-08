@@ -17,7 +17,9 @@ export class UserEventConsumer {
 
     console.log('Userメッセージ受信:'); 
     console.log('トピック:', topic);
-    console.log('キー:', originalMessage.key!.toString());
+    if (originalMessage.key) {
+      console.log('キー:', originalMessage.key!.toString());
+    }
     console.log('値:', parsedValue!);
     console.log('ヘッダー:', originalMessage.headers);
   }
